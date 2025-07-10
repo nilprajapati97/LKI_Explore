@@ -298,15 +298,11 @@ dtb-$(CONFIG_MYBOARD) += myboard.dtb
 -----------------------------------------------------------------
 Create files:
 
-cpp
-Copy
-Edit
+
 board/mycompany/myboard/myboard.c
 Implement functions like:
 
-c
-Copy
-Edit
+
 int board_init(void) {
     // Init pinmux, GPIOs, etc.
     return 0;
