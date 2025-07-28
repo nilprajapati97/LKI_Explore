@@ -17,6 +17,7 @@ U-Boot (short for Universal Bootloader) is an open-source bootloader used in emb
 🧠 Key Stages in U-Boot Boot Process
 =======================================================================
 🔹 1. Boot ROM / Preloader (executed by CPU on power-up)
+---------------------------------------------------------------
 Embedded in SoC (non-modifiable)
 
 Initializes minimal peripherals (e.g., UART, NAND)
@@ -24,6 +25,7 @@ Initializes minimal peripherals (e.g., UART, NAND)
 Loads SPL or full U-Boot into SRAM or DDR
 
 🔹 2. SPL (Secondary Program Loader) (Optional)
+---------------------------------------------------------------
 Used when full U-Boot can't fit into SRAM
 
 Minimal U-Boot version: only necessary drivers (DDR init, NAND/SPI load, UART)
@@ -35,7 +37,9 @@ Example in SPL:
 
 board_init_f(); // basic init: clocks, timers
 dram_init();    // DDR memory controller setup
+
 🔹 3. U-Boot Proper
+---------------------------------------------------------------
 Full-featured bootloader in DDR
 
 Loads OS kernel, DTB, initrd, etc.
@@ -83,11 +87,11 @@ bootz jumps to kernel
 0x43000000 ← zImage
 0x44000000 ← DTB
 0x45000000 ← initrd
+
 🔐 Secure Boot with U-Boot
+---------------------------------------------------------------
 Integrates RSA / SHA verification
-
 Verifies signed U-Boot, kernel, DTB before execution
-
 Uses keys burned in OTP or secure flash
 
 ⚙️ U-Boot Build and Flashing (Workflow)
@@ -98,14 +102,11 @@ make                         # Build SPL + U-Boot
 Image files:
 
 spl/u-boot-spl.bin
-
 u-boot.img
-
 u-boot.dtb (optional for DTB support)
 
 Flash to:
-
-eMMC, NAND, QSPI, SD card (depends on SoC boot mode)
+   eMMC, NAND, QSPI, SD card (depends on SoC boot mode)
 
 🔄 Boot Flow Recap
 =======================================================================
@@ -128,20 +129,17 @@ eMMC, NAND, QSPI, SD card (depends on SoC boot mode)
 🧰 Tools and Commands
 =======================================================================
 Tool	            Use
-mkimage	Create uImage or FIT files
-bootz, bootm	Boot zImage, uImage
+mkimage	            Create uImage or FIT files
+bootz, bootm	      Boot zImage, uImage
 load mmc, tftpboot	Load binaries from SD/TFTP
-saveenv, setenv	Save/edit environment variables
-bdinfo, printenv	Show board/device info
+saveenv, setenv	   Save/edit environment variables
+bdinfo, printenv	   Show board/device info
 
 🧩 Real-World Use Cases
 =======================================================================
 Android bootloaders (early stage → handoff to ABL)
-
 RTOS boot for industrial controllers
-
 IoT devices booting from SPI or QSPI flash
-
 UEFI/GRUB replacement on ARM
 
 
@@ -193,24 +191,24 @@ UEFI/GRUB replacement on ARM
 
 
 ✅ Component Summary
-Stage	        Description	            Purpose
+Stage	            Description	            Purpose
 -------------------------------------------------
-BootROM	        Internal SoC code	    Load SPL or U-Boot
-SPL	            Minimal U-Boot	        RAM init + load U-Boot
-U-Boot Proper	Full bootloader	        Load kernel + dtb + initrd
-Kernel	        Operating System	    Boot Linux, QNX, RTOS
+BootROM	         Internal SoC code	    Load SPL or U-Boot
+SPL	            Minimal U-Boot	       RAM init + load U-Boot
+U-Boot Proper	   Full bootloader	    Load kernel + dtb + initrd
+Kernel	         Operating System	    Boot Linux, QNX, RTOS
 
 
 
 ✅ Common Sources:
 ==================================================
-Stage	        Load From	        Format
+Stage	               Load From	        Format
 --------------------------------------------------
-SPL	            NAND / eMMC / QSPI	u-boot-spl.bin
-U-Boot Proper	DDR	                u-boot.img
-Kernel	        MMC / TFTP / USB	zImage, Image, uImage
-DTB	            Same as kernel	    .dtb
-Initrd	        Optional	        .cpio, .gz
+SPL	            NAND / eMMC / QSPI	 u-boot-spl.bin
+U-Boot Proper	   DDR	                u-boot.img
+Kernel	         MMC / TFTP / USB	    zImage, Image, uImage
+DTB	            Same as kernel	       .dtb
+Initrd	         Optional	             .cpio, .gz
 
 
 
@@ -233,15 +231,15 @@ git checkout v2024.01
 -----------------------------------------------------------------
 Use the cross-compiler matching your board architecture:
 
-Target	Toolchain Example
-ARM (32-bit)	arm-linux-gnueabihf-
+Target	         Toolchain Example
+------------------------------------------
+ARM (32-bit)	   arm-linux-gnueabihf-
 ARM64 (AArch64)	aarch64-linux-gnu-
-RISC-V	riscv64-unknown-linux-gnu-
+RISC-V	         riscv64-unknown-linux-gnu-
 
 Example (ARM 32-bit):
+                     export CROSS_COMPILE=arm-linux-gnueabihf-
 
-
-export CROSS_COMPILE=arm-linux-gnueabihf-
 ✅ 3. Start from a Similar Board
 -----------------------------------------------------------------
 Use an existing board that's close to your hardware (SoC family, memory map, etc.).
@@ -251,38 +249,29 @@ List available boards:
 
 ls configs | grep <SoC or vendor>
 Example:
+      make am335x_evm_defconfig
 
-
-make am335x_evm_defconfig
 ✅ 4. Create Your Custom Board Support Package (BSP)
 -----------------------------------------------------------------
 📁 Create Directories and Files:
-
-board/mycompany/myboard/
-include/configs/myboard.h
-configs/myboard_defconfig
+                              board/mycompany/myboard/
+                              include/configs/myboard.h
+                              configs/myboard_defconfig
 ✅ 5. Edit myboard_defconfig
 -----------------------------------------------------------------
 Minimal example:
+                     CONFIG_ARM=y
+                     CONFIG_ARCH_SUNXI=y         # Replace with your SoC
+                     CONFIG_MACH_MYBOARD=y       # Your board name
+                     CONFIG_SYS_CONFIG_NAME="myboard"
 
-ini
-Copy
-Edit
-CONFIG_ARM=y
-CONFIG_ARCH_SUNXI=y         # Replace with your SoC
-CONFIG_MACH_MYBOARD=y       # Your board name
-CONFIG_SYS_CONFIG_NAME="myboard"
 ✅ 6. Edit Device Tree (.dts)
 -----------------------------------------------------------------
 Create a custom DT:
 
+                  arch/arm/dts/myboard.dts
+                  Include common SoC file:
 
-arch/arm/dts/myboard.dts
-Include common SoC file:
-
-dts
-Copy
-Edit
 #include "am335x.dtsi"
 / {
     model = "My Custom Board";
@@ -290,34 +279,27 @@ Edit
 };
 Update Makefile:
 
-make
-Copy
-Edit
 dtb-$(CONFIG_MYBOARD) += myboard.dtb
+
 ✅ 7. Edit Board Init Code
 -----------------------------------------------------------------
 Create files:
-
-
-board/mycompany/myboard/myboard.c
+               board/mycompany/myboard/myboard.c
 Implement functions like:
-
-
-int board_init(void) {
-    // Init pinmux, GPIOs, etc.
-    return 0;
-}
+                        int board_init(void) {
+                            // Init pinmux, GPIOs, etc.
+                            return 0;
+                        }
 
 int dram_init(void) {
     gd->ram_size = <DDR_SIZE>;
     return 0;
 }
+
 ✅ 8. Update U-Boot Kconfig
 -----------------------------------------------------------------
 To expose your board to make:
-
 Add config MYBOARD in Kconfig
-
 Enable your board config in boards.cfg or Kconfig/Makefile
 
 ✅ 9. Build U-Boot
@@ -329,21 +311,16 @@ make -j$(nproc)
 
 
 u-boot.img – main bootloader
-
 u-boot-spl.bin – if SPL used
-
 myboard.dtb – your device tree
 
 ✅ 10. Flash to Target Device
 -----------------------------------------------------------------
 Depending on your boot source:
-
 SD Card (RAW):
-
-
-dd if=u-boot-spl.bin of=/dev/sdX bs=1K seek=1
-dd if=u-boot.img of=/dev/sdX bs=1K seek=69
-eMMC/NAND/QSPI: Use vendor tools or dfu-util, tftpboot, etc.
+               dd if=u-boot-spl.bin of=/dev/sdX bs=1K seek=1
+               dd if=u-boot.img of=/dev/sdX bs=1K seek=69
+               eMMC/NAND/QSPI: Use vendor tools or dfu-util, tftpboot, etc.
 
 ✅ Tips for Real-World Porting
 -----------------------------------------------------------------

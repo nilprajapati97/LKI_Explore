@@ -29,6 +29,25 @@ Debugging USB issues at the kernel level
 +--------------------------+
 
 
++-----------------------------+
+|   User Space Applications  |
+|  (libusb, udev, etc.)      |
++-----------------------------+
+|     USB Class Drivers      |  ← Example: usb-storage, usbhid
++-----------------------------+
+|       USB Core             |  ← Common APIs, enumeration logic
++-----------------------------+
+| Host Controller Driver (HCD) | ← e.g., EHCI, OHCI, XHCI
++-----------------------------+
+|     USB Host Controller    |
++-----------------------------+
+|         USB Bus            |
++-----------------------------+
+|      USB Device (Peripheral)|
++-----------------------------+
+
+
+
 🔹 1. USB Host Controller Driver (HCD)
 -----------------------------------------
 This layer directly interacts with the USB host controller hardware.
@@ -206,3 +225,12 @@ module_usb_driver(my_usb_driver);
 MODULE_AUTHOR("Your Name");
 MODULE_DESCRIPTION("Sample USB driver with probe/disconnect");
 MODULE_LICENSE("GPL");
+
+
+✅ Key Additions:
+#include headers required for kernel module and USB APIs.
+MODULE_DEVICE_TABLE() so udev/modprobe can auto-load your module.
+MODULE_* macros for metadata.
+Clear and concise comments per function and structure.
+
+

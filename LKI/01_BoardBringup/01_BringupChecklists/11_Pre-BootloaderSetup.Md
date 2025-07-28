@@ -139,9 +139,11 @@ Without completing these steps correctly, you won’t even reach U-Boot or ABL l
 
 🔚 End Result of Pre-Bootloader Phase
 ==========================================================
+
 If all above steps are successful:
 01. SoC exits reset
 02. BootROM runs from internal mask ROM
 03. BootROM finds the boot media (eMMC/UFS/SD)
 04. Loads first-stage loader (e.g., XBL for Qualcomm) into SRAM
 05.  UART log begins → you enter Bootloader Phase
+
